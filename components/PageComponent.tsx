@@ -17,6 +17,7 @@ export function DataTable() {
   const [selectedColumn, setSelectedColumn] = useState("algorithms");
   const [currentPage, setCurrentPage] = useState(1);
   const [visibleData, setVisibleData] = useState<DataProps[]>([]);
+  const [isMounted, setIsMounted] = useState(true)
 
   const handleCheckboxChange = (rowData: any) => {
     setSelectedRows((prevSelectedRows) => {
@@ -53,8 +54,11 @@ export function DataTable() {
         const data = await fetchData();
         setVisibleData(data);
         console.log(data)
-        const initialSelectedRows: DataProps[] = data.slice(0, 5).map((row: DataProps) => ({ ...row }));
-        setSelectedRows(initialSelectedRows);
+        if(isMounted) {
+          const initialSelectedRows: DataProps[] = data.slice(0, 5).map((row: DataProps) => ({ ...row }));
+          setSelectedRows(initialSelectedRows);
+          setIsMounted(false)
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
