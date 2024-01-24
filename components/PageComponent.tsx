@@ -3,16 +3,19 @@
 import React, { useEffect, useState } from "react"
 import dynamic from "next/dynamic"
 
-import { data } from "./data";
+import { data, DataProps } from "./data";
 import { getRandomColor } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 
 
 
 export function DataTable() {
   const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-  const [selectedRows, setSelectedRows] = useState([]);
+  const [selectedRows, setSelectedRows] = useState<DataProps[]>([]);
   const [selectedColumn, setSelectedColumn] = useState("algorithms");
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10;
 
   const handleCheckboxChange = (rowData: any) => {
     setSelectedRows((prevSelectedRows) => {
@@ -26,12 +29,22 @@ export function DataTable() {
     });
   };
 
-  const handleRadioChange = (column) => {
+  const handleRadioChange = (column:any) => {
     setSelectedColumn(column);
   };
 
+  const handlePageChange = (page:any) => {
+    setCurrentPage(page);
+  };
+
+  const totalPages = Math.ceil(data.length / rowsPerPage);
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+
+  const visibleData = data.slice(startIndex, endIndex);
+
   useEffect(() => {
-    const initialSelectedRows = data.slice(0, 5).map((row) => ({ ...row }));
+    const initialSelectedRows:DataProps[] = data.slice(0, 5).map((row) => ({ ...row }));
     setSelectedRows(initialSelectedRows);
   }, []);
 
@@ -119,12 +132,12 @@ export function DataTable() {
             </tr>
           </thead>
           <tbody>
-            {data.map((row) => (
+            {visibleData.map((row) => (
               <tr key={row.id} className="hover:bg-slate-50">
                 <td className="border p-2">
                   <Checkbox
-                    id={row.id}
-                    checked={selectedRows.some((selectedRow) => selectedRow.name === row.name)}
+                    id={row.id.toString()}
+                    checked={selectedRows.some((selectedRow) => selectedRow.id === row.id)}
                     onCheckedChange={() => handleCheckboxChange(row)}
                   />
                 </td>
@@ -139,6 +152,29 @@ export function DataTable() {
             ))}
           </tbody>
         </table>
+
+        <div className="flex mt-4 justify-between">
+          <div>
+            Page {currentPage} of {totalPages}
+          </div>
+          <div className="flex">
+            <Button
+              className="mx-1 px-2 py-1"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Prev
+            </Button>
+            <Button
+              className="mx-1 px-2 py-1"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+
       </div>
 
       <div className="col-span-1 pl-4">
@@ -155,9 +191,6 @@ export function DataTable() {
           layout={{
             barmode: 'stack',
             title: `${selectedColumn}`,
-            xaxis: {
-              title: 'Names',
-            },
             yaxis: {
               title: 'Marks',
             },
