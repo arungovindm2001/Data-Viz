@@ -12,8 +12,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 export function DataTable() {
   const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
   const [selectedRows, setSelectedRows] = useState([]);
+  const [selectedColumn, setSelectedColumn] = useState("algorithms");
 
-  const handleCheckboxChange = (rowData:any) => {
+  const handleCheckboxChange = (rowData: any) => {
     setSelectedRows((prevSelectedRows) => {
       const isRowSelected = prevSelectedRows.some((row) => row.name === rowData.name);
 
@@ -25,6 +26,10 @@ export function DataTable() {
     });
   };
 
+  const handleRadioChange = (column) => {
+    setSelectedColumn(column);
+  };
+
   useEffect(() => {
     const initialSelectedRows = data.slice(0, 5).map((row) => ({ ...row }));
     setSelectedRows(initialSelectedRows);
@@ -34,19 +39,85 @@ export function DataTable() {
     <>
       <div className="col-span-1 pr-4 overflow-auto">
         <table className="min-w-full border-3 border-slate-300">
-        <thead className="border rounded-lg">
-          <tr className="bg-slate-300">
-            <th className="p-2">
-            </th>
-            <th className="p-2">Name</th>
-            <th className="p-2">DSA</th>
-            <th className="p-2">OS</th>
-            <th className="p-2">Networks</th>
-            <th className="p-2">AI</th>
-            <th className="p-2">Security</th>
-            <th className="p-2">DBMS</th>
-          </tr>
-        </thead>
+          <thead className="border rounded-lg">
+            <tr className="bg-slate-300">
+              <th className="p-2">
+              </th>
+              <th className="p-2">Name</th>
+              <th className="p-2">
+                <label>
+                  <input
+                    type="radio"
+                    name="selectedColumn"
+                    value="algorithms"
+                    checked={selectedColumn === "algorithms"}
+                    onChange={() => handleRadioChange("algorithms")}
+                  />
+                  DSA
+                </label>
+
+              </th>
+              <th className="p-2">
+                <label>
+                  <input
+                    type="radio"
+                    name="selectedColumn"
+                    value="operatingSystems"
+                    checked={selectedColumn === "operatingSystems"}
+                    onChange={() => handleRadioChange("operatingSystems")}
+                  />
+                  OS
+                </label>
+              </th>
+              <th className="p-2"><label>
+                <input
+                  type="radio"
+                  name="selectedColumn"
+                  value="networks"
+                  checked={selectedColumn === "networks"}
+                  onChange={() => handleRadioChange("networks")}
+                />
+                Networks
+              </label>
+              </th>
+              <th className="p-2">
+                <label>
+                  <input
+                    type="radio"
+                    name="selectedColumn"
+                    value="artificalIntelligence"
+                    checked={selectedColumn === "artificialIntelligence"}
+                    onChange={() => handleRadioChange("artificialIntelligence")}
+                  />
+                  AI
+                </label>
+              </th>
+              <th className="p-2">
+                <label>
+                  <input
+                    type="radio"
+                    name="selectedColumn"
+                    value="security"
+                    checked={selectedColumn === "security"}
+                    onChange={() => handleRadioChange("security")}
+                  />
+                  Security
+                </label>
+              </th>
+              <th className="p-2">
+                <label>
+                  <input
+                    type="radio"
+                    name="selectedColumn"
+                    value="databases"
+                    checked={selectedColumn === "databases"}
+                    onChange={() => handleRadioChange("databases")}
+                  />
+                  DBMS
+                </label>
+              </th>
+            </tr>
+          </thead>
           <tbody>
             {data.map((row) => (
               <tr key={row.id} className="hover:bg-slate-50">
@@ -71,40 +142,27 @@ export function DataTable() {
       </div>
 
       <div className="col-span-1 pl-4">
-        <div className="grid grid-cols-2">          
-          {selectedRows.map((selectedRow) => (
-              <Plot
-                key ={selectedRow.name}
-                data={[
-                  {
-                    type: 'bar',
-                    x: ['DSA', 'OS', 'Networks', 'AI', 'Security', 'DBMS'],
-                    y: [
-                      selectedRow.algorithms,
-                      selectedRow.operatingSystems,
-                      selectedRow.networks,
-                      selectedRow.artificialIntelligence,
-                      selectedRow.security,
-                      selectedRow.databases,
-                    ],
-                    name: selectedRow.name,
-                    marker: { color: getRandomColor() },
-                  },
-                ]}
-                style={{ width: '100%', height: '100%' }}
-                layout={{
-                  barmode: 'stack',
-                  title: `${selectedRow.name}`,
-                  xaxis: {
-                    title: 'Subject',
-                  },
-                  yaxis: {
-                    title: 'Marks',
-                  },
-                }}
-              />
-          ))}
-        </div>
+        <Plot
+          data={[
+            {
+              type: 'bar',
+              x: selectedRows.map((row) => row.name),
+              y: selectedRows.map((row) => row[selectedColumn]),
+              marker: { color: getRandomColor() },
+            },
+          ]}
+          style={{ width: '100%', height: '100%' }}
+          layout={{
+            barmode: 'stack',
+            title: `${selectedColumn}`,
+            xaxis: {
+              title: 'Names',
+            },
+            yaxis: {
+              title: 'Marks',
+            },
+          }}
+        />
       </div>
     </>
   );
