@@ -2,12 +2,13 @@
 
 import React, { useEffect, useState } from "react"
 import dynamic from "next/dynamic"
+import axios from "axios";
 
-import { data, DataProps } from "./data";
+import { DataProps } from "./data";
 import { getRandomColor } from "@/lib/utils";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-
 
 
 export function DataTable() {
@@ -15,7 +16,7 @@ export function DataTable() {
   const [selectedRows, setSelectedRows] = useState<DataProps[]>([]);
   const [selectedColumn, setSelectedColumn] = useState("algorithms");
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 10;
+  const [visibleData, setVisibleData] = useState<DataProps[]>([]);
 
   const handleCheckboxChange = (rowData: any) => {
     setSelectedRows((prevSelectedRows) => {
@@ -29,24 +30,38 @@ export function DataTable() {
     });
   };
 
-  const handleRadioChange = (column:any) => {
+  const handleRadioChange = (column: any) => {
     setSelectedColumn(column);
   };
 
-  const handlePageChange = (page:any) => {
+  const handlePageChange = (page: any) => {
     setCurrentPage(page);
   };
 
-  const totalPages = Math.ceil(data.length / rowsPerPage);
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
+  const rowsPerPage = 10;
+  const totalPages = 5
 
-  const visibleData = data.slice(startIndex, endIndex);
 
   useEffect(() => {
-    const initialSelectedRows:DataProps[] = data.slice(0, 5).map((row) => ({ ...row }));
-    setSelectedRows(initialSelectedRows);
-  }, []);
+    async function fetchData() {
+      const response = await axios.get(`https://retoolapi.dev/cp42M1/data?_page=${currentPage}&_per_page=${rowsPerPage}`)
+      return response.data
+    }
+
+    const fetchDataAndInitialize = async () => {
+      try {
+        const data = await fetchData();
+        setVisibleData(data);
+        console.log(data)
+        const initialSelectedRows: DataProps[] = data.slice(0, 5).map((row: DataProps) => ({ ...row }));
+        setSelectedRows(initialSelectedRows);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchDataAndInitialize();
+  }, [currentPage]);
 
   return (
     <>
