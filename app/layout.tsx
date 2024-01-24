@@ -16,7 +16,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <div className="grid grid-cols-2 h-screen pt-2 pb-2 py-6 px-6">
+          {children}
+        </div>
+      </body>
     </html>
   );
 }
