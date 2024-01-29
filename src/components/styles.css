@@ -1,0 +1,106 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&display=swap");
+
+body {
+  font-family: "Poppins", "sans-serif";
+  font-weight: 300;
+}
+
+.spinner-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.spinner {
+  width: 3.125rem;
+  height: 3.125rem;
+}
+
+.page {
+  padding: 0.25rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  /* column-gap: 1rem; */
+}
+
+.component {
+  /* box-shadow: 0 0.25rem 0.25rem 0 rgba(0, 0, 0, 0.2), 0 6px 20rem 0 rgba(0, 0, 0, 0.19); */
+  justify-items: center;
+}
+
+table {
+  /* border: 0.0625rem solid #ddd; */
+  /* border-radius: 1rem; */
+  min-width: 100%;
+}
+
+th {
+  padding: 0.8rem;
+  text-align: center;
+  background-color: #55635e;
+  color: white;
+  font-weight: 500;
+}
+
+td {
+  padding: 0.7rem;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+tr:hover {
+  background-color: #ddd;
+}
+
+input[type="radio"] {
+  height: 1.125rem;
+  width: 1.125rem;
+}
+
+.checkbox {
+  top: 0;
+  left: 0;
+  height: 1.125rem;
+  width: 1.125rem;
+  background-color: #eee;
+}
+
+.checkbox:checked {
+  background-color: #2196f3;
+}
+
+.checkbox:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.5rem;
+}
+
+.pagination--buttons--prev {
+  margin: 0.25rem;
+}
+
+.pagination--buttons--next {
+  margin: 0.25rem 0rem 0.25rem 0.25rem;
+}
+
+button {
+  background-color: #55635e;
+  border: none;
+  border-radius: 0.5rem;
+  color: white;
+  padding: 0.75rem 1.75rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+}
