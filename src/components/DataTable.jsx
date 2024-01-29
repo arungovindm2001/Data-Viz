@@ -1,22 +1,20 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-import "./styles.css";
-import Spinner from "../spinner.svg";
-import BarGraph from "./BarGraph";
+import './styles.css';
+import Spinner from '../spinner.svg';
+import BarGraph from './BarGraph';
 
 export default function DataTable() {
   const [selectedRows, setSelectedRows] = useState([]);
-  const [selectedColumn, setSelectedColumn] = useState("algorithms");
+  const [selectedColumn, setSelectedColumn] = useState('algorithms');
   const [currentPage, setCurrentPage] = useState(1);
   const [visibleData, setVisibleData] = useState([]);
   const [isMounted, setIsMounted] = useState(true);
 
   const handleCheckboxChange = (rowData) => {
     setSelectedRows((prevSelectedRows) => {
-      const isRowSelected = prevSelectedRows.some(
-        (row) => row.name === rowData.name
-      );
+      const isRowSelected = prevSelectedRows.some((row) => row.name === rowData.name);
 
       if (isRowSelected) {
         return prevSelectedRows.filter((row) => row.name !== rowData.name);
@@ -40,7 +38,7 @@ export default function DataTable() {
   useEffect(() => {
     async function fetchData() {
       const response = await axios.get(
-        `https://retoolapi.dev/cp42M1/data?_page=${currentPage}&_per_page=${rowsPerPage}`
+        `https://retoolapi.dev/cp42M1/data?_page=${currentPage}&_per_page=${rowsPerPage}`,
       );
       return response.data;
     }
@@ -51,14 +49,12 @@ export default function DataTable() {
         setVisibleData(data);
         console.log(data);
         if (isMounted) {
-          const initialSelectedRows = data
-            .slice(0, 5)
-            .map((row) => ({ ...row }));
+          const initialSelectedRows = data.slice(0, 5).map((row) => ({ ...row }));
           setSelectedRows(initialSelectedRows);
           setIsMounted(false);
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error('Error fetching data:', error);
       }
     };
 
@@ -66,8 +62,8 @@ export default function DataTable() {
   }, [currentPage, isMounted]);
 
   return visibleData.length !== 0 ? (
-    <div className="page">
-      <div className="component">
+    <div className='page'>
+      <div className='component'>
         <table>
           <thead>
             <tr>
@@ -76,11 +72,11 @@ export default function DataTable() {
               <th>
                 <label>
                   <input
-                    type="radio"
-                    name="selectedColumn"
-                    value="algorithms"
-                    checked={selectedColumn === "algorithms"}
-                    onChange={() => handleRadioChange("algorithms")}
+                    type='radio'
+                    name='selectedColumn'
+                    value='algorithms'
+                    checked={selectedColumn === 'algorithms'}
+                    onChange={() => handleRadioChange('algorithms')}
                   />
                   DSA
                 </label>
@@ -88,11 +84,11 @@ export default function DataTable() {
               <th>
                 <label>
                   <input
-                    type="radio"
-                    name="selectedColumn"
-                    value="operatingSystems"
-                    checked={selectedColumn === "operatingSystems"}
-                    onChange={() => handleRadioChange("operatingSystems")}
+                    type='radio'
+                    name='selectedColumn'
+                    value='operatingSystems'
+                    checked={selectedColumn === 'operatingSystems'}
+                    onChange={() => handleRadioChange('operatingSystems')}
                   />
                   OS
                 </label>
@@ -100,11 +96,11 @@ export default function DataTable() {
               <th>
                 <label>
                   <input
-                    type="radio"
-                    name="selectedColumn"
-                    value="networks"
-                    checked={selectedColumn === "networks"}
-                    onChange={() => handleRadioChange("networks")}
+                    type='radio'
+                    name='selectedColumn'
+                    value='networks'
+                    checked={selectedColumn === 'networks'}
+                    onChange={() => handleRadioChange('networks')}
                   />
                   Networks
                 </label>
@@ -112,11 +108,11 @@ export default function DataTable() {
               <th>
                 <label>
                   <input
-                    type="radio"
-                    name="selectedColumn"
-                    value="artificalIntelligence"
-                    checked={selectedColumn === "artificialIntelligence"}
-                    onChange={() => handleRadioChange("artificialIntelligence")}
+                    type='radio'
+                    name='selectedColumn'
+                    value='artificalIntelligence'
+                    checked={selectedColumn === 'artificialIntelligence'}
+                    onChange={() => handleRadioChange('artificialIntelligence')}
                   />
                   AI
                 </label>
@@ -124,11 +120,11 @@ export default function DataTable() {
               <th>
                 <label>
                   <input
-                    type="radio"
-                    name="selectedColumn"
-                    value="security"
-                    checked={selectedColumn === "security"}
-                    onChange={() => handleRadioChange("security")}
+                    type='radio'
+                    name='selectedColumn'
+                    value='security'
+                    checked={selectedColumn === 'security'}
+                    onChange={() => handleRadioChange('security')}
                   />
                   Security
                 </label>
@@ -136,11 +132,11 @@ export default function DataTable() {
               <th>
                 <label>
                   <input
-                    type="radio"
-                    name="selectedColumn"
-                    value="databases"
-                    checked={selectedColumn === "databases"}
-                    onChange={() => handleRadioChange("databases")}
+                    type='radio'
+                    name='selectedColumn'
+                    value='databases'
+                    checked={selectedColumn === 'databases'}
+                    onChange={() => handleRadioChange('databases')}
                   />
                   DBMS
                 </label>
@@ -152,12 +148,10 @@ export default function DataTable() {
               <tr key={row.id}>
                 <td>
                   <input
-                    type="checkbox"
-                    className="checkbox"
+                    type='checkbox'
+                    className='checkbox'
                     id={row.id.toString()}
-                    checked={selectedRows.some(
-                      (selectedRow) => selectedRow.id === row.id
-                    )}
+                    checked={selectedRows.some((selectedRow) => selectedRow.id === row.id)}
                     onChange={() => handleCheckboxChange(row)}
                   />
                 </td>
@@ -172,21 +166,20 @@ export default function DataTable() {
             ))}
           </tbody>
         </table>
-        <div className="pagination">
+        <div className='pagination'>
           <div>
-            Page <span className="page-number">{currentPage}</span> of{" "}
-            {totalPages}
+            Page <span className='page-number'>{currentPage}</span> of {totalPages}
           </div>
-          <div className="pagination--buttons">
+          <div className='pagination--buttons'>
             <button
-              className="pagination--buttons--prev"
+              className='pagination--buttons--prev'
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
             >
               Prev
             </button>
             <button
-              className="pagination--buttons--next"
+              className='pagination--buttons--next'
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
             >
@@ -195,7 +188,7 @@ export default function DataTable() {
           </div>
         </div>
       </div>
-      <div className="component">
+      <div className='component'>
         <BarGraph
           x={selectedRows.map((row) => row.name)}
           y={selectedRows.map((row) => row[selectedColumn])}
@@ -204,8 +197,8 @@ export default function DataTable() {
       </div>
     </div>
   ) : (
-    <div className="spinner-container">
-      <img src={Spinner} className="spinner" alt="loading-spinner" />
+    <div className='spinner-container'>
+      <img src={Spinner} className='spinner' alt='loading-spinner' />
     </div>
   );
 }

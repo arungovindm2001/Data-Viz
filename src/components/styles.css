@@ -1,7 +1,7 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500&display=swap');
 
 body {
-  font-family: "Poppins", "sans-serif";
+  font-family: 'Inter', 'sans-serif';
   font-weight: 300;
 }
 
@@ -55,7 +55,7 @@ tr:hover {
   background-color: #ddd;
 }
 
-input[type="radio"] {
+input[type='radio'] {
   height: 1.125rem;
   width: 1.125rem;
 }
