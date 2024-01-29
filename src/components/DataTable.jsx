@@ -35,6 +35,25 @@ export default function DataTable() {
   const totalPages = 5;
   const rowsPerPage = 10;
 
+  const getColumnLabel = (column) => {
+    switch (column) {
+      case 'algorithms':
+        return 'DSA';
+      case 'operatingSystems':
+        return 'OS';
+      case 'networks':
+        return 'Networks';
+      case 'artificialIntelligence':
+        return 'AI';
+      case 'security':
+        return 'Security';
+      case 'databases':
+        return 'DBMS';
+      default:
+        return '';
+    }
+  };
+
   useEffect(() => {
     async function fetchData() {
       const response = await axios.get(
@@ -192,7 +211,7 @@ export default function DataTable() {
         <BarGraph
           x={selectedRows.map((row) => row.name)}
           y={selectedRows.map((row) => row[selectedColumn])}
-          title={selectedColumn}
+          title={getColumnLabel(selectedColumn)}
         />
       </div>
     </div>
