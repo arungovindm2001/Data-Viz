@@ -35,23 +35,18 @@ export default function DataTable() {
   const totalPages = 5;
   const rowsPerPage = 10;
 
+  const columnMappings = [
+    { value: 'algorithms', label: 'DSA' },
+    { value: 'operatingSystems', label: 'OS' },
+    { value: 'networks', label: 'Networks' },
+    { value: 'artificialIntelligence', label: 'AI' },
+    { value: 'security', label: 'Security' },
+    { value: 'databases', label: 'DBMS' },
+  ];
+
   const getColumnLabel = (column) => {
-    switch (column) {
-      case 'algorithms':
-        return 'DSA';
-      case 'operatingSystems':
-        return 'OS';
-      case 'networks':
-        return 'Networks';
-      case 'artificialIntelligence':
-        return 'AI';
-      case 'security':
-        return 'Security';
-      case 'databases':
-        return 'DBMS';
-      default:
-        return '';
-    }
+    const mapping = columnMappings.find((item) => item.value === column);
+    return mapping ? mapping.label : '';
   };
 
   useEffect(() => {
@@ -88,78 +83,20 @@ export default function DataTable() {
             <tr>
               <th></th>
               <th>Name</th>
-              <th>
-                <label>
-                  <input
-                    type='radio'
-                    name='selectedColumn'
-                    value='algorithms'
-                    checked={selectedColumn === 'algorithms'}
-                    onChange={() => handleRadioChange('algorithms')}
-                  />
-                  DSA
-                </label>
-              </th>
-              <th>
-                <label>
-                  <input
-                    type='radio'
-                    name='selectedColumn'
-                    value='operatingSystems'
-                    checked={selectedColumn === 'operatingSystems'}
-                    onChange={() => handleRadioChange('operatingSystems')}
-                  />
-                  OS
-                </label>
-              </th>
-              <th>
-                <label>
-                  <input
-                    type='radio'
-                    name='selectedColumn'
-                    value='networks'
-                    checked={selectedColumn === 'networks'}
-                    onChange={() => handleRadioChange('networks')}
-                  />
-                  Networks
-                </label>
-              </th>
-              <th>
-                <label>
-                  <input
-                    type='radio'
-                    name='selectedColumn'
-                    value='artificalIntelligence'
-                    checked={selectedColumn === 'artificialIntelligence'}
-                    onChange={() => handleRadioChange('artificialIntelligence')}
-                  />
-                  AI
-                </label>
-              </th>
-              <th>
-                <label>
-                  <input
-                    type='radio'
-                    name='selectedColumn'
-                    value='security'
-                    checked={selectedColumn === 'security'}
-                    onChange={() => handleRadioChange('security')}
-                  />
-                  Security
-                </label>
-              </th>
-              <th>
-                <label>
-                  <input
-                    type='radio'
-                    name='selectedColumn'
-                    value='databases'
-                    checked={selectedColumn === 'databases'}
-                    onChange={() => handleRadioChange('databases')}
-                  />
-                  DBMS
-                </label>
-              </th>
+              {columnMappings.map((column) => (
+                <th key={column.value}>
+                  <label>
+                    <input
+                      type='radio'
+                      name='selectedColumn'
+                      value={column.value}
+                      checked={selectedColumn === column.value}
+                      onChange={() => handleRadioChange(column.value)}
+                    />
+                    {getColumnLabel(column.value)}
+                  </label>
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
