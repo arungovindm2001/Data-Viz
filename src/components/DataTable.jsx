@@ -6,31 +6,45 @@ import Spinner from '../spinner.svg';
 import BarGraph from './BarGraph';
 
 export default function DataTable() {
-  const [selectedRows, setSelectedRows] = useState([]);
+  const [selectedRows, setSelectedRows] = useState(new Set());
   const [selectedColumn, setSelectedColumn] = useState('algorithms');
   const [currentPage, setCurrentPage] = useState(1);
   const [visibleData, setVisibleData] = useState([]);
   const [isMounted, setIsMounted] = useState(true);
 
-  const handleCheckboxChange = (rowData) => {
+  const handleCheckboxChange = (rowId) => {
     setSelectedRows((prevSelectedRows) => {
-      const isRowSelected = prevSelectedRows.some((row) => row.name === rowData.name);
-
-      if (isRowSelected) {
-        return prevSelectedRows.filter((row) => row.name !== rowData.name);
+      const newSelectedRows = new Set(prevSelectedRows);
+      if (newSelectedRows.has(rowId)) {
+        newSelectedRows.delete(rowId);
       } else {
-        return [...prevSelectedRows, rowData];
+        newSelectedRows.add(rowId);
       }
+      return newSelectedRows;
     });
-    console.log(selectedRows);
+    // console.log(selectedRows);
   };
 
   const handleRadioChange = (column) => {
     setSelectedColumn(column);
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
+  const handleNextPage = async (page) => {
+    try {
+      const response = await axios.get(
+        `https://retoolapi.dev/cp42M1/data?_page=${page}&_per_page=${rowsPerPage}`,
+      );
+
+      setVisibleData((prev) => {
+        const existingIds = new Set(prev.map((row) => row.id));
+        const filteredData = response.data.filter((row) => !existingIds.has(row.id));
+        return [...prev, ...filteredData];
+      });
+
+      setCurrentPage(page);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   };
   const totalPages = 5;
   const rowsPerPage = 10;
@@ -60,11 +74,13 @@ export default function DataTable() {
     const fetchDataAndInitialize = async () => {
       try {
         const data = await fetchData();
-        setVisibleData(data);
-        console.log(data);
+        setVisibleData((prev) => {
+          const existingIds = new Set(prev.map((row) => row.id));
+          const filteredData = data.filter((row) => !existingIds.has(row.id));
+          return [...prev, ...filteredData];
+        });
         if (isMounted) {
-          const initialSelectedRows = data.slice(0, 5).map((row) => ({ ...row }));
-          setSelectedRows(initialSelectedRows);
+          setSelectedRows(new Set(data.slice(0, 5).map((row) => row.id)));
           setIsMounted(false);
         }
       } catch (error) {
@@ -73,7 +89,7 @@ export default function DataTable() {
     };
 
     fetchDataAndInitialize();
-  }, [currentPage, isMounted]);
+  }, []);
 
   return visibleData.length !== 0 ? (
     <div className='page'>
@@ -100,26 +116,28 @@ export default function DataTable() {
             </tr>
           </thead>
           <tbody>
-            {visibleData.map((row) => (
-              <tr key={row.id}>
-                <td>
-                  <input
-                    type='checkbox'
-                    className='checkbox'
-                    id={row.id.toString()}
-                    checked={selectedRows.some((selectedRow) => selectedRow.id === row.id)}
-                    onChange={() => handleCheckboxChange(row)}
-                  />
-                </td>
-                <td>{row.name}</td>
-                <td>{row.algorithms}</td>
-                <td>{row.operatingSystems}</td>
-                <td>{row.networks}</td>
-                <td>{row.artificialIntelligence}</td>
-                <td>{row.security}</td>
-                <td>{row.databases}</td>
-              </tr>
-            ))}
+            {visibleData
+              .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+              .map((row) => (
+                <tr key={row.id}>
+                  <td>
+                    <input
+                      type='checkbox'
+                      className='checkbox'
+                      id={row.id}
+                      checked={selectedRows.has(row.id)}
+                      onChange={() => handleCheckboxChange(row.id)}
+                    />
+                  </td>
+                  <td>{row.name}</td>
+                  <td>{row.algorithms}</td>
+                  <td>{row.operatingSystems}</td>
+                  <td>{row.networks}</td>
+                  <td>{row.artificialIntelligence}</td>
+                  <td>{row.security}</td>
+                  <td>{row.databases}</td>
+                </tr>
+              ))}
           </tbody>
         </table>
         <div className='pagination'>
@@ -129,14 +147,14 @@ export default function DataTable() {
           <div className='pagination--buttons'>
             <button
               className='pagination--buttons--prev'
-              onClick={() => handlePageChange(currentPage - 1)}
+              onClick={() => setCurrentPage(currentPage - 1)}
               disabled={currentPage === 1}
             >
               Prev
             </button>
             <button
               className='pagination--buttons--next'
-              onClick={() => handlePageChange(currentPage + 1)}
+              onClick={() => handleNextPage(currentPage + 1)}
               disabled={currentPage === totalPages}
             >
               Next
@@ -146,8 +164,14 @@ export default function DataTable() {
       </div>
       <div className='component'>
         <BarGraph
-          x={selectedRows.map((row) => row.name)}
-          y={selectedRows.map((row) => row[selectedColumn])}
+          x={Array.from(selectedRows).map((rowId) => {
+            const selectedRow = visibleData.find((row) => row.id === rowId);
+            return selectedRow ? selectedRow.name : 'N/A';
+          })}
+          y={Array.from(selectedRows).map((rowId) => {
+            const selectedRow = visibleData.find((row) => row.id === rowId);
+            return selectedRow[selectedColumn];
+          })}
           title={getColumnLabel(selectedColumn)}
         />
       </div>
