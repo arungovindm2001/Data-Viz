@@ -11,6 +11,14 @@ export default function DataTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [visibleData, setVisibleData] = useState([]);
   const [isMounted, setIsMounted] = useState(true);
+  const [sentApiCheck, setSentApiCheck] = useState(Array(5).fill(false));
+
+  async function fetchData(page) {
+    const response = await axios.get(
+      `https://retoolapi.dev/cp42M1/data?_page=${page}&_per_page=${rowsPerPage}`,
+    );
+    return response.data;
+  }
 
   const handleCheckboxChange = (rowId) => {
     setSelectedRows((prevSelectedRows) => {
@@ -31,17 +39,24 @@ export default function DataTable() {
 
   const handleNextPage = async (page) => {
     try {
-      const response = await axios.get(
-        `https://retoolapi.dev/cp42M1/data?_page=${page}&_per_page=${rowsPerPage}`,
-      );
-
-      setVisibleData((prev) => {
-        const existingIds = new Set(prev.map((row) => row.id));
-        const filteredData = response.data.filter((row) => !existingIds.has(row.id));
-        return [...prev, ...filteredData];
-      });
-
       setCurrentPage(page);
+      if (!sentApiCheck[page - 1]) {
+        const response = await axios.get(
+          `https://retoolapi.dev/cp42M1/data?_page=${page}&_per_page=${rowsPerPage}`,
+        );
+
+        setVisibleData((prev) => {
+          const existingIds = new Set(prev.map((row) => row.id));
+          const filteredData = response.data.filter((row) => !existingIds.has(row.id));
+          return [...prev, ...filteredData];
+        });
+        setSentApiCheck((prev) => {
+          const updatedArray = [...prev];
+          updatedArray[page - 1] = true;
+          return updatedArray;
+        });
+        // console.log(sentApiCheck);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -64,21 +79,20 @@ export default function DataTable() {
   };
 
   useEffect(() => {
-    async function fetchData() {
-      const response = await axios.get(
-        `https://retoolapi.dev/cp42M1/data?_page=${currentPage}&_per_page=${rowsPerPage}`,
-      );
-      return response.data;
-    }
-
     const fetchDataAndInitialize = async () => {
       try {
-        const data = await fetchData();
+        const data = await fetchData(1);
         setVisibleData((prev) => {
           const existingIds = new Set(prev.map((row) => row.id));
           const filteredData = data.filter((row) => !existingIds.has(row.id));
           return [...prev, ...filteredData];
         });
+        setSentApiCheck((prev) => {
+          const updatedArray = [...prev];
+          updatedArray[0] = true;
+          return updatedArray;
+        });
+        // console.log(sentApiCheck);
         if (isMounted) {
           setSelectedRows(new Set(data.slice(0, 5).map((row) => row.id)));
           setIsMounted(false);
